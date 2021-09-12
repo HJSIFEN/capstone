@@ -4,6 +4,53 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote
 import requests
 import datetime
+import fnmatch
+import re
+
+def processString(txt):
+    specialChars = "!#$%^&*()"
+    for specialChar in specialChars:
+        txt = txt.replace(specialChar, '')
+        txt = txt.replace(',', ' ')
+        txt = txt.replace('.', ' ')
+        txt = txt.replace('"', ' ')
+        txt = txt.replace('ღ', ' ')
+        txt = txt.replace('​', ' ')
+        txt = txt.replace('  ', ' ')
+        txt = txt.replace('   ', ' ')
+        txt = txt.replace('    ', ' ')
+        txt = txt.replace('     ', ' ')
+    return txt.strip()
+
+def processText(txt):
+    specialChars = "!#$%^&*()"
+    for specialChar in specialChars:
+        txt = txt.replace('  ', ' ')
+        txt = txt.replace('   ', ' ')
+        txt = txt.replace('    ', ' ')
+        txt = txt.replace('     ', ' ')
+    return txt.strip()
+
+# 본문에 키워드 언급 갯수
+def keyword_search(txt, keyword):
+    
+    if(txt.find(keyword[0]) != -1):
+        a = txt.find(keyword[0])
+        b = 1
+        while txt[a+1:].find(keyword) != -1:
+            a = txt[a+1:].find(keyword) + a + 1
+            b+=1
+        return b
+
+    
+
+# 키워드가 본문의 처음 100단어 안에 포함되는가
+def keyword_in_100(txt):
+    a = txt.find("양궁")
+    if(a<=100):
+        return True
+    else:
+        return False
 
 def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3"):
     """ 
@@ -55,26 +102,54 @@ def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", c
         source = source.replace('amp;', '')
         url = 'http://blog.naver.com' + source
 
-        blog_url += url
+        blog_url += [url]
+        
 
     return blog_url
 
+# 게시날짜
 def postDate(soup):
     date = soup.find_all("p", class_="date fil5 pcol2 _postAddDate") + soup.find_all("span", class_="se_publishDate pcol2")
-    postDate = []
 
     if date:
-        date = BeautifulSoup(str(date.pop())).text
+        postDate = BeautifulSoup(str(date.pop())).text
     else :
-        postDate += ["None"]
+        postDate = 0
     
     return postDate
 
-def commentNum(soup):
+# 댓글 개수
+def _commentNum(soup):
     comtemp = str(soup.find_all('em', id='floating_bottom_commentCount'))
     commentNu = comtemp.replace('[<em id="floating_bottom_commentCount">','').replace('\n','').replace('\t','').replace('</em>]','')
 
     return commentNu
+
+def blog_search(keyword, length = 1000):
+
+    url_list = []
+
+    for start in range(1, length, 30):
+        url = "https://search.naver.com/search.naver?query="+ keyword + "&nso=&where=blog&sm=tab_opt&start="+str(start)
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text)
+      
+        for a in soup.find_all('a', 'api_txt_lines total_tit'):
+            start_idx = str(a).find("href")
+            end_idx = str(a).find("onclick")
+            temp_url = str(a)[start_idx + 6 : end_idx-2].replace('?Redirect=Log&amp;logNo=', '/')
+            if(fnmatch.fnmatch(temp_url, '*naver*')):
+                response = requests.get(temp_url)
+                soup=BeautifulSoup(response.text)
+                idx = str(soup.find_all('iframe').pop()).find('src')
+                source = str(soup.find_all('iframe').pop())[idx+5:-11]
+                    
+                source = source.replace('amp;', '')
+                url = 'http://blog.naver.com' + source
+                url_list += [url]
+    return url_list                
+
+
 
 def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", naver_api = False):
     text1 = [] #데이터 값
@@ -86,10 +161,14 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
     link_num_data = []      # 링크 개수
     player_num_data = []    # 동영상 개수
     img_num_data = []       # 이미지 개수
+    poDate = []
 
     # naver api
     if naver_api:
         blog_url = naver_api_blog_url(keyword, client_id, client_secret)
+
+    else :
+        blog_url = blog_search(keyword)
 
     for url in blog_url :
         text2 = ""
@@ -103,17 +182,20 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
         soup = BeautifulSoup(response1.text)
         # 예외처리
         temp = soup.find_all("div", "se-main-container") + soup.find_all("div", id="postViewArea")
-        temp1 = BeautifulSoup(str(temp.pop()))
+        try:
+            temp1 = BeautifulSoup(str(temp.pop()))
+        except:
+            continue
         text = temp1.text.replace('\n', ' ')
         text1.append([processString(text)])
         title = soup.title.text
 
         #지난 날짜, 포스트 날짜
-        postDate = postDate(soup)
+        poDate += [postDate(soup)]
 
 
         #댓글 갯수
-        commentNu = commentNum(soup)
+        commentNu = _commentNum(soup)
         
         
         try:
@@ -123,7 +205,7 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
             
 
         # 키워드 언급 개수
-        keyword_mentioned.append(keyword_search(text))
+        keyword_mentioned.append(keyword_search(text, keyword))
             
         # 본문 분량
         text2 += processText(text)
@@ -165,5 +247,7 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
     data_dict['link_num_data'] = link_num_data
     data_dict['player_num_data'] = player_num_data
     data_dict['img_num_data'] = img_num_data
-
-    return data_dict
+    data_dict['post_date'] = poDate
+    
+    
+    return data_dict, text1
