@@ -6,51 +6,8 @@ import requests
 import datetime
 import fnmatch
 import re
+from func.utils import *
 
-def processString(txt):
-    specialChars = "!#$%^&*()"
-    for specialChar in specialChars:
-        txt = txt.replace(specialChar, '')
-        txt = txt.replace(',', ' ')
-        txt = txt.replace('.', ' ')
-        txt = txt.replace('"', ' ')
-        txt = txt.replace('ღ', ' ')
-        txt = txt.replace('​', ' ')
-        txt = txt.replace('  ', ' ')
-        txt = txt.replace('   ', ' ')
-        txt = txt.replace('    ', ' ')
-        txt = txt.replace('     ', ' ')
-    return txt.strip()
-
-def processText(txt):
-    specialChars = "!#$%^&*()"
-    for specialChar in specialChars:
-        txt = txt.replace('  ', ' ')
-        txt = txt.replace('   ', ' ')
-        txt = txt.replace('    ', ' ')
-        txt = txt.replace('     ', ' ')
-    return txt.strip()
-
-# 본문에 키워드 언급 갯수
-def keyword_search(txt, keyword):
-    
-    if(txt.find(keyword[0]) != -1):
-        a = txt.find(keyword[0])
-        b = 1
-        while txt[a+1:].find(keyword) != -1:
-            a = txt[a+1:].find(keyword) + a + 1
-            b+=1
-        return b
-
-    
-
-# 키워드가 본문의 처음 100단어 안에 포함되는가
-def keyword_in_100(txt):
-    a = txt.find("양궁")
-    if(a<=100):
-        return True
-    else:
-        return False
 
 def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", length = 10):
     """ 
@@ -111,23 +68,7 @@ def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", c
 
     return blog_url
 
-# 게시날짜
-def postDate(soup):
-    date = soup.find_all("p", class_="date fil5 pcol2 _postAddDate") + soup.find_all("span", class_="se_publishDate pcol2")
 
-    if date:
-        postDate = BeautifulSoup(str(date.pop())).text
-    else :
-        postDate = 0
-    
-    return postDate
-
-# 댓글 개수
-def _commentNum(soup):
-    comtemp = str(soup.find_all('em', id='floating_bottom_commentCount'))
-    commentNu = comtemp.replace('[<em id="floating_bottom_commentCount">','').replace('\n','').replace('\t','').replace('</em>]','')
-
-    return commentNu
 
 def blog_search(keyword, length = 1000):
 
@@ -200,7 +141,7 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
 
 
         #댓글 갯수
-        commentNu = _commentNum(soup)
+        commentNu = commentN(soup)
         
         
         try:
