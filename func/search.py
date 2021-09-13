@@ -74,7 +74,7 @@ def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", cli
     encText = urllib.parse.quote(keyword)
     for i in range(1, length, 10):
 
-        url = "https://openapi.naver.com/v1/search/blog?query=" + encText  + f'&display=10&start={i}&sort=sim'# json 결과
+        url = "https://openapi.naver.com/v1/search/blog?query=" + encText  + f'&display=100&start={i}&sort=sim'# json 결과
         # url = "https://openapi.naver.com/v1/search/blog.xml?query=" + encText # xml 결과
 
         request = urllib.request.Request(url)
@@ -92,20 +92,21 @@ def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", cli
 
 def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", length = 10):
     results = search_naver_api(keyword, client_id, client_secret)
-    
-    items = json.loads(results)['items']
-
+    items =[]
     blog_url = []
+    for result in results:
+        items = json.loads(result)['items']
 
-    for i in range(len(items)):
-        response1 = requests.get(items[i]['link'])
-        soup = BeautifulSoup(response1.text)
-        idx = str(soup.find_all('iframe').pop()).find('src')
-        source = str(soup.find_all('iframe').pop())[idx+5:-11]
-        source = source.replace('amp;', '')
-        url = 'http://blog.naver.com' + source
+    
+        for i in range(len(items)):
+            response1 = requests.get(items[i]['link'])
+            soup = BeautifulSoup(response1.text)
+            idx = str(soup.find_all('iframe').pop()).find('src')
+            source = str(soup.find_all('iframe').pop())[idx+5:-11]
+            source = source.replace('amp;', '')
+            url = 'http://blog.naver.com' + source
 
-        blog_url += [url]
+            blog_url += [url]
         
 
     return blog_url
