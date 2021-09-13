@@ -52,7 +52,7 @@ def keyword_in_100(txt):
     else:
         return False
 
-def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", length = 10):
+def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3"):
     """ 
     네이버 api를 사용하여 1000개의 블로그를 크롤링한다.
 
@@ -70,29 +70,26 @@ def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", cli
     "title, link, description, bloggername, bloggerlink, postdate")
 
     """
-    results = []
+
     encText = urllib.parse.quote(keyword)
-    for i in range(1, length, 10):
+    url = "https://openapi.naver.com/v1/search/blog?query=" + encText # json 결과
+    # url = "https://openapi.naver.com/v1/search/blog.xml?query=" + encText # xml 결과
 
-        url = "https://openapi.naver.com/v1/search/blog?query=" + encText  + f'&display=10&start={i}&sort=sim'# json 결과
-        # url = "https://openapi.naver.com/v1/search/blog.xml?query=" + encText # xml 결과
-
-        request = urllib.request.Request(url)
-        request.add_header("X-Naver-Client-Id",client_id)
-        request.add_header("X-Naver-Client-Secret",client_secret)
-        response = urllib.request.urlopen(request)
-        rescode = response.getcode()
-        if(rescode==200):
-            response_body = response.read()
-            results += [response_body.decode('utf-8')]
-        else:
-            print("Error Code:" + rescode)
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id",client_id)
+    request.add_header("X-Naver-Client-Secret",client_secret)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    if(rescode==200):
+        response_body = response.read()
+        results = response_body.decode('utf-8')
+    else:
+        print("Error Code:" + rescode)
 
     return results
 
-def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", length = 10):
+def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3"):
     results = search_naver_api(keyword, client_id, client_secret)
-    
     items = json.loads(results)['items']
 
     blog_url = []
@@ -133,7 +130,6 @@ def blog_search(keyword, length = 1000):
     url_list = []
 
     for start in range(1, length, 30):
-        
         url = "https://search.naver.com/search.naver?query="+ keyword + "&nso=&where=blog&sm=tab_opt&start="+str(start)
         response = requests.get(url)
         soup = BeautifulSoup(response.text)
@@ -155,7 +151,7 @@ def blog_search(keyword, length = 1000):
 
 
 
-def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", naver_api = False, length = 1000):
+def get_data(keyword = '축구', length = 1000 ,client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", naver_api = False):
     text1 = [] #데이터 값
     text_amount = []        # 본문 분량
     keyword_mentioned = []  # 키워드 언급 횟수
@@ -169,7 +165,7 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
 
     # naver api
     if naver_api:
-        blog_url = naver_api_blog_url(keyword, client_id, client_secret, length)
+        blog_url = naver_api_blog_url(keyword, client_id, client_secret)
 
     else :
         blog_url = blog_search(keyword, length)
