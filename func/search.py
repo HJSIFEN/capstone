@@ -151,7 +151,7 @@ def blog_search(keyword, length = 1000):
 
 
 
-def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", naver_api = False):
+def get_data(keyword = '축구', length = 1000 ,client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", naver_api = False):
     text1 = [] #데이터 값
     text_amount = []        # 본문 분량
     keyword_mentioned = []  # 키워드 언급 횟수
@@ -168,7 +168,7 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
         blog_url = naver_api_blog_url(keyword, client_id, client_secret)
 
     else :
-        blog_url = blog_search(keyword)
+        blog_url = blog_search(keyword, length)
 
     for url in blog_url :
         text2 = ""
