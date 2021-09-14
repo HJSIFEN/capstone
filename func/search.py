@@ -61,6 +61,8 @@ def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", c
             idx = str(soup.find_all('iframe').pop()).find('src')
             source = str(soup.find_all('iframe').pop())[idx+5:-11]
             source = source.replace('amp;', '')
+            if source.find('PostView.naver') == -1:
+                continue
             url = 'http://blog.naver.com' + source
 
             blog_url += [url]
@@ -107,8 +109,10 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
     link_num_data = []      # 링크 개수
     player_num_data = []    # 동영상 개수
     img_num_data = []       # 이미지 개수
-    poDate = []
-
+    poDate = []             # 작성일자
+    rank = []               # 순위
+    i = 0
+    
     # naver api
     if naver_api:
         blog_url = naver_api_blog_url(keyword, client_id, client_secret, length)
@@ -117,13 +121,8 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
         blog_url = blog_search(keyword, length)
 
     for url in blog_url :
+        ranking = 0
         text2 = ""
-        # response1 = requests.get(items[i]['link'])
-        # soup = BeautifulSoup(response1.text)
-        # idx = str(soup.find_all('iframe').pop()).find('src')
-        # source = str(soup.find_all('iframe').pop())[idx+5:-11]
-        # source = source.replace('amp;', '')
-        # url = 'http://blog.naver.com' + source
         response1 = requests.get(url)
         soup = BeautifulSoup(response1.text)
         # 예외처리
@@ -183,6 +182,10 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
 
         img_num= len(temp1.find_all('img'))
         img_num_data.append(img_num)
+        
+        ranking = 60-i
+        rank.append(ranking)
+        i += 1
 
     data_dict = {}
     data_dict['text_amount'] = text_amount
@@ -194,6 +197,7 @@ def get_data(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secr
     data_dict['player_num_data'] = player_num_data
     data_dict['img_num_data'] = img_num_data
     data_dict['post_date'] = poDate
-    
+    data_dict['rank'] = rank
+    print("------------------------------------------------------------------------------------------------------------------")
     
     return data_dict, text1
