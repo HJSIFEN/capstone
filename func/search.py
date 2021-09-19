@@ -6,7 +6,8 @@ import requests
 import datetime
 import fnmatch
 import re
-from func.utils import *
+import sys
+from utils import *
 
 
 def search_naver_api(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", client_secret = "hbpIY84KD3", length = 10):
