@@ -61,6 +61,8 @@ def naver_api_blog_url(keyword = '축구', client_id = "mFVJrDtj4trdT2ermoVF", c
             idx = str(soup.find_all('iframe').pop()).find('src')
             source = str(soup.find_all('iframe').pop())[idx+5:-11]
             source = source.replace('amp;', '')
+            if source.find('PostView.naver') == -1:
+                continue
             url = 'http://blog.naver.com' + source
 
             blog_url += [url]

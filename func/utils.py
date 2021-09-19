@@ -102,3 +102,5 @@ def keyword_search(txt, keyword):
             a = txt[a+1:].find(keyword) + a + 1
             b+=1
         return b
+    else:
+        return 0
