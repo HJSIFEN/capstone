@@ -1,4 +1,33 @@
 from bs4 import BeautifulSoup
+import datetime
+import re
+import requests
+
+
+def past_day(day):
+    if day.find('전') > -1:
+        return 0
+    dt = day.split('.')
+    return (datetime.datetime.now() - datetime.datetime(int(dt[0]), int(dt[1]) , int(dt[2]))).days
+
+def visitor(url):
+    id = url.split('/')[3]
+    id = id[15:].split('&')[0]
+    v_url = 'http://blog.naver.com/NVisitorgp4Ajax.nhn?'+id
+    response = requests.get(v_url)
+    sum_visitor = 0
+
+    for text in BeautifulSoup(response.text).find_all('visitorcnt'):
+        text = str(text)
+        idx = re.search('cnt="[0-9]*"', text)
+        idx1 = re.search('id="[0-9]*"', text)
+        sum_visitor+=int(text[idx.span()[0]:idx.span()[1]].replace("cnt=", "").replace('"', ''))
+
+    return sum_visitor
+
+def make_past_day(data_dict):
+    past_d = list(map(past_day, data_dict['post_date']))
+    return past_d    
 
 def processText(txt):
     specialChars = "!#$%^&*()"
