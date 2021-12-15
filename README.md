@@ -1,6 +1,7 @@
 # capstone
 
-설치
+## Install
+
 Graphviz
 pygrphviz
 C++ compiler
