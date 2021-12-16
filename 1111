@@ -1,0 +1,17 @@
+
+    graph graphname {
+        0 [label="past_date<=36" shape=box style="filled"];1 [label="text_amount<=934" shape=box style="filled"];2 [label="past_date<=759" shape=box ];3 [label="text_amount<=468" shape=box style="filled"];4 [label="five_day_visitor<=2864" shape=box ];5 [label="img_num_data<=9" shape=box ];6 [label="keyword_mentioned<=0" shape=box ];7 [label="30down
+54%" shape=box style="filled" fillcolor="yellow"];8 [label="keyword_title_data<=0" shape=box ];9 [label="30down
+57%" shape=box style="filled" fillcolor="yellow"];10 [label="30down
+77%" shape=box style="filled" fillcolor="yellow"];11 [label="30down
+52%" shape=box style="filled" fillcolor="yellow"];12 [label="30up
+67%" ];13 [label="30up
+89%" style="filled"];14 [label="30up
+54%" ];15 [label="past_date<=2494" shape=box ];16 [label="30up
+80%" ];17 [label="30up
+70%" ];18 [label="30up
+56%" ];10 [label="30down
+77%" shape=box style="filled" fillcolor="green"];
+        0--1 [color=red penwidth=5];0--2 [style=dotted];1--3 [color=red penwidth=5];1--4 [style=dotted];2--5 [style=dotted];2--6 [style=dotted];3--13 [color=red penwidth=5];3--14 [style=dotted];4--9 [style=dotted];4--10 [style=dotted];5--7 [style=dotted];5--8 [style=dotted];6--15 [style=dotted];6--16 [style=dotted];8--11 [style=dotted];8--12 [style=dotted];15--17 [style=dotted];15--18 [style=dotted];
+    }
+    
