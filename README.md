@@ -11,7 +11,7 @@
 <br>
 
 
-## Result
+## Image Result
 <br>
 
 ![image](https://user-images.githubusercontent.com/60573146/173763107-4d574a50-af64-499c-8bde-1d4224da205c.png)
