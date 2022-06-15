@@ -19,11 +19,12 @@
 <br>
 
 - 초록선이 블로그가 상위 30위 안에 들어갈 수 있는 가장 높은 확률의 솔루션.
-<br>
+
 - 같은 확률일시 윗단의 path node로 솔루션 해준다
-<br>
+
 - yellow box node : 상위 30위 안에 들어갈 수 있는 확률이 높은 leaf node
 
+<br>
 ## Code explannation
 
 - 블로그 크롤링<br>
