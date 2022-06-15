@@ -10,6 +10,13 @@
 >output: 유저 블로그와 상위 블로그의 비교점(사진, 텍스트)
 <br>
 
+
+## Result
+<br>
+![image](https://user-images.githubusercontent.com/60573146/173763107-4d574a50-af64-499c-8bde-1d4224da205c.png)
+<br>
+
+
 ## Code explannation
 
 - 블로그 크롤링<br>
